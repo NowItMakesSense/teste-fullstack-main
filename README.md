@@ -56,7 +56,9 @@ function parseErro(e) {
 
   - uma tabela de histórico  
   - uma trigger  
-  - uma function  
+  - uma function
+
+> Lembrar de rodar a nova Seed (teste-fullstack-main\scripts\nova_seed.sql).
 
 - Assim toda vez que modificarem a tabela de veículos, o histórico mostra corretamente:
 
