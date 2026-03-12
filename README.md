@@ -101,3 +101,13 @@ function parseErro(e) {
 services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 ```
+
+- Como sugeri o **Clean Architecture**, utilizaria o **Design Pattern Repository** e implementaria no sistema o **UnitOfWork**, garantindo o desacoplamento entre camadas e centralizar o controle de persistência das alterações realizadas pelos repositórios.
+
+```csharp
+public interface IUnitOfWork
+{
+    Task<int> CommitAsync();
+}
+```
+
