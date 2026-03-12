@@ -111,3 +111,12 @@ public interface IUnitOfWork
 }
 ```
 
+- Caso necessário, iria adotar paginação para as rotas mais importantes e que teriam um fluxo mais tanto de fluxo, quanto de informação. Garantindo desempenho, menos consumo de recursos do servidor e respostas mais rápidas ao requisitante.
+
+```csharp
+var users = await _context.Users
+    .Skip((page - 1) * pageSize)
+    .Take(pageSize)
+    .ToListAsync();
+```
+
