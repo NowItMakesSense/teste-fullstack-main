@@ -94,21 +94,35 @@ from "public"."veiculo";
 create or replace function fn_veiculo_cliente_historico()
 returns trigger as $$
 begin
+    if tg_op = 'INSERT' then
+    
+        insert into veiculo_cliente_historico
+        (id, veiculo_id, cliente_id, data_inicio)
+        values
+        (uuid_generate_v4(), new.id, new.cliente_id, now());
 
-    if new.cliente_id = old.cliente_id then
         return new;
     end if;
 
-    update veiculo_cliente_historico
-    set data_fim = now()
-    where veiculo_id = old.id
-    and data_fim is null;
+    if tg_op = 'UPDATE' then
 
-    insert into veiculo_cliente_historico
-    (id, veiculo_id, cliente_id, data_inicio)
-    values
-    (uuid_generate_v4(), new.id, new.cliente_id, now());
+        if new.cliente_id = old.cliente_id then
+            return new;
+        end if;
 
+        update veiculo_cliente_historico
+        set data_fim = now()
+        where veiculo_id = old.id
+        and data_fim is null;
+
+        insert into veiculo_cliente_historico
+        (id, veiculo_id, cliente_id, data_inicio)
+        values
+        (uuid_generate_v4(), new.id, new.cliente_id, now());
+
+        return new;
+
+    end if;
     return new;
 
 end;
@@ -116,8 +130,8 @@ $$ language plpgsql;
 
 -- TRIGGER
 create trigger trg_veiculo_cliente_historico
-after update of cliente_id
-on "public"."veiculo"
+after insert or update of cliente_id
+on public.veiculo
 for each row
 execute function fn_veiculo_cliente_historico();
 
