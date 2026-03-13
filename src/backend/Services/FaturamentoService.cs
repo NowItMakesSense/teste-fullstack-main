@@ -26,11 +26,10 @@ namespace Parking.Api.Services
             foreach (var cli in mensalistas)
             {
                 //Verifica o Historica, Buscando junto na tabela Fatura para descobrir quais ainda nao foram faturados pela data de competencia fornecida
-                var historico = await _db.HistoricoVeiculos.Where(historico => 
+                var historico = await _db.HistoricoVeiculos.Where(historico =>
                                                                      historico.ClienteId == cli.Id
                                                                   && historico.DataInicio <= corte
-                                                                  && (historico.DataFim == null || historico.DataFim > corte) // Filtra no Historico pelo Periodo
-                                                                  && !_db.Faturas.Where(f => f.ClienteId == cli.Id && f.Competencia == competencia) 
+                                                                  && !_db.Faturas.Where(f => f.ClienteId == cli.Id && f.Competencia == competencia)
                                                                                  .SelectMany(f => f.Veiculos) // Verifica na Tabela de Fatura, para saber se ja foi faturado
                                                                                  .Any(v => v.VeiculoId == historico.VeiculoId)).ToListAsync(ct);
 
@@ -44,7 +43,8 @@ namespace Parking.Api.Services
 
                 foreach (var item in historico)
                 {
-                    fat.Valor += CalcularMensalidadeProporcional(primeiroDia, item.DataFim ?? corte, (decimal)cli.ValorMensalidade!);
+                    var dataFinal = item.DataFim is null || item.DataFim > corte ? corte : item.DataFim;
+                    fat.Valor += CalcularMensalidadeProporcional(primeiroDia, dataFinal, (decimal)cli.ValorMensalidade!);
                     fat.Veiculos.Add(new FaturaVeiculo
                     {
                         FaturaId = fat.Id,
